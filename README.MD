@@ -1,33 +1,53 @@
 # JSONCraft – Holodeck Command
 
-JSONCraft is a web-based holodeck for forging structured JSON image prompts from user-uploaded photos. It combines OpenRouter's Nemotron Nano 12B 2 VL with a PromptCraft-inspired gallery to store JSON outputs alongside the source images.
+A React + Vite workbench for crafting JSON-only prompts against OpenRouter. The interface ships with a ChatGPT-style shell, a schema-aware JSON prompt editor, guardrails for validating assistant output, and PromptCraft-inspired persistence + gallery tools.
 
-## Quickstart (Demo Server)
-1. **Install dependencies**
+## Features
+- **OpenRouter JSON mode client** with runtime schema guards and centralized error handling.
+- **Global state via Zustand** separating chat sessions, prompts/styles, and persistence helpers.
+- **Schema validation + guardrails** using Zod with readable error feedback and repair controls.
+- **JSON prompt style editor** with presets, linting, and apply-to-chat actions.
+- **PromptCraft-like persistence** (IndexedDB/localforage) with export/import of sessions + templates.
+- **Gallery UX** for browsing, sorting, duplicating, and sharing prompt templates.
+- **Tailwind-powered UI** with responsive split layout, usage hints, and retry/stop controls.
+
+## Getting Started
+1. Install dependencies
    ```bash
    npm install
    ```
-2. **Create environment file**
+2. Copy environment template
    ```bash
-   cp .env.example .env
-   # add your OPENROUTER_API_KEY (optional for demo)
+   cp .env.example .env.local
+   # Add your OpenRouter key
    ```
-3. **Run the server**
+3. Run the dev server
    ```bash
    npm run dev
    ```
-4. **Test endpoints**
-   - `GET /health` → service status
-   - `POST /api/analyze` with `multipart/form-data` and `image` file → returns JSON prompt + reasoning
-   - `GET /api/gallery` → returns in-memory gallery entries
+4. Lint & test
+   ```bash
+   npm run lint
+   npm test
+   ```
 
-If `OPENROUTER_API_KEY` is not set, the server returns a demo JSON payload for quick prototyping.
+## Environment
+- `VITE_OPENROUTER_API_KEY`: API key for authenticated requests.
+- `VITE_OPENROUTER_BASE_URL`: Base URL for OpenRouter (defaults to `https://openrouter.ai/api`).
+- `VITE_MODEL`: JSON-capable model (default `openai/gpt-4.1-mini`).
 
-## Stack (initial demo)
-- Node.js + Express
-- Multer for file uploads (in-memory)
-- OpenRouter SDK for Nemotron Nano 12B 2 VL (vision + reasoning)
-- In-memory gallery store (replace with MySQL in Phase 2)
+## Architecture Notes
+- **Routing** via React Router with `/` for chat and `/gallery` for saved templates.
+- **State** lives in `src/state` with dedicated slices for chat and prompt management.
+- **Validation** in `src/lib/validators.ts` defines the JSON schema used for both editor linting and assistant output checks.
+- **Persistence** via `localforage` in `src/lib/persistence.ts` with export/import helpers.
+- **API client** in `src/lib/openrouterClient.ts` enforces JSON responses and surfaces rate limits / validation errors.
 
-## Next Steps
-See `docs/ROADMAP.md` for phased tasks, including Google OAuth, MySQL persistence, UI inspired by PromptCraft/JSON_prompt_tool, and credit tracking.
+## Testing & Fixtures
+- Vitest drives unit tests for environment config and schema validation under `src/__tests__`.
+- A mock-friendly architecture makes it easy to stub `fetch` for OpenRouter responses.
+
+## JSON Style Editor & Gallery
+- Edit JSON styles with inline linting; apply the active style to the next chat request.
+- Save templates with tags, duplicate them, or export/import a bundle for sharing.
+- Gallery view offers quick actions plus search/filter controls.
