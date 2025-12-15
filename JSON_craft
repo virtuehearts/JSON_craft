@@ -1,0 +1,62 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+ROOT_DIR="$SCRIPT_DIR"
+
+log() {
+  printf "[jsoncraft] %s\n" "$*"
+}
+
+usage() {
+  cat <<'USAGE'
+Usage: ./JSON_craft <command>
+
+Commands:
+  start    Install dependencies (if needed), ensure .env.local exists, and start the dev server.
+  help     Show this help message.
+USAGE
+}
+
+ensure_env() {
+  local env_file="$ROOT_DIR/.env.local"
+  local example_file="$ROOT_DIR/.env.example"
+
+  if [[ ! -f "$env_file" && -f "$example_file" ]]; then
+    cp "$example_file" "$env_file"
+    log "Created .env.local from .env.example. Update secrets before running in production."
+  elif [[ ! -f "$env_file" ]]; then
+    log "No .env.local found. Create one to set Vite environment variables."
+  fi
+}
+
+install_deps() {
+  if [[ ! -d "$ROOT_DIR/node_modules" ]]; then
+    log "Installing npm dependencies..."
+    (cd "$ROOT_DIR" && npm install)
+  else
+    log "Dependencies already installed."
+  fi
+}
+
+start() {
+  install_deps
+  ensure_env
+  log "Starting dev server..."
+  (cd "$ROOT_DIR" && npm run dev)
+}
+
+command="${1:-help}"
+case "$command" in
+  start)
+    start
+    ;;
+  help|--help|-h)
+    usage
+    ;;
+  *)
+    log "Unknown command: $command"
+    usage
+    exit 1
+    ;;
+esac
