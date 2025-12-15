@@ -1,10 +1,12 @@
 import localforage from 'localforage';
 import { ChatMessage, ChatSession } from '../types/chat';
 import { PromptTemplate } from '../types/prompt';
+import { VisualEntry } from '../types/visual';
 
 const DB_VERSION = 1;
 const SESSION_KEY = `jsoncraft/sessions/v${DB_VERSION}`;
 const TEMPLATE_KEY = `jsoncraft/templates/v${DB_VERSION}`;
+const VISUAL_KEY = `jsoncraft/visuals/v${DB_VERSION}`;
 
 export async function saveSession(session: ChatSession, messages: ChatMessage[]) {
   const existing = (await localforage.getItem<Record<string, { session: ChatSession; messages: ChatMessage[] }>>(SESSION_KEY)) || {};
@@ -31,14 +33,24 @@ export async function loadTemplates(): Promise<PromptTemplate[]> {
   return (await localforage.getItem<PromptTemplate[]>(TEMPLATE_KEY)) || [];
 }
 
+export async function saveVisualEntries(entries: VisualEntry[]) {
+  await localforage.setItem(VISUAL_KEY, entries);
+}
+
+export async function loadVisualEntries(): Promise<VisualEntry[]> {
+  return (await localforage.getItem<VisualEntry[]>(VISUAL_KEY)) || [];
+}
+
 export async function exportAll() {
   const sessions = await loadSessions();
   const templates = await loadTemplates();
+  const visuals = await loadVisualEntries();
   return {
     version: DB_VERSION,
     exportedAt: new Date().toISOString(),
     sessions,
-    templates
+    templates,
+    visuals
   };
 }
 
@@ -47,6 +59,9 @@ export async function importAll(payload: unknown) {
   if (typeof data !== 'object' || !data) throw new Error('Invalid import payload');
   if (data.templates) {
     await localforage.setItem(TEMPLATE_KEY, data.templates as PromptTemplate[]);
+  }
+  if (data.visuals) {
+    await localforage.setItem(VISUAL_KEY, data.visuals as VisualEntry[]);
   }
   if (data.sessions) {
     await localforage.setItem(

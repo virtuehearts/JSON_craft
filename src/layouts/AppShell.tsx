@@ -5,7 +5,8 @@ import { usePromptStore } from '../state/promptStore';
 
 const links = [
   { to: '/', label: 'Chat' },
-  { to: '/gallery', label: 'Gallery' }
+  { to: '/gallery', label: 'Gallery' },
+  { to: '/visual-gallery', label: 'Image Gallery' }
 ];
 
 export default function AppShell() {
