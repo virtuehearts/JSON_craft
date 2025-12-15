@@ -45,6 +45,14 @@ JSONCraft is a React + Vite workbench for building, testing, and sharing JSON-on
    npm run preview
    ```
 
+### Quick start script
+
+You can also use the helper script to set up dependencies, scaffold `.env.local` from `.env.example`, and start the dev server in one step:
+
+```bash
+./JSON_craft start
+```
+
 ## Environment
 - `VITE_OPENROUTER_API_KEY`: API key for authenticated requests.
 - `VITE_OPENROUTER_BASE_URL`: Base URL for OpenRouter (defaults to `https://openrouter.ai/api`).
