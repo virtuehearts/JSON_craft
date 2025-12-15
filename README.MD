@@ -1,6 +1,13 @@
 # JSONCraft – Holodeck Command
 
-A React + Vite workbench for crafting JSON-only prompts against OpenRouter. The interface ships with a ChatGPT-style shell, a schema-aware JSON prompt editor, guardrails for validating assistant output, and PromptCraft-inspired persistence + gallery tools.
+JSONCraft is a React + Vite workbench for building, testing, and sharing JSON-only prompts against OpenRouter. It provides a chat-style interface tailored for JSON-mode models so you can prototype prompts, validate outputs, and curate reusable templates without leaving the browser. The project focuses on end-to-end guardrails—authoring, validation, retries, and persistence—to help teams quickly ship structured AI workflows.
+
+## What can I use JSONCraft for?
+- **Prompt prototyping:** iterate on JSON-only prompts with live schema validation before integrating them into production code.
+- **Team workflows:** share prompt templates through the gallery, export/import bundles, and keep presets consistent across teammates.
+- **Guardrailed chat experiences:** combine the chat shell with Zod-based validation to enforce JSON responses and trigger automated repairs or retries.
+- **Model exploration:** swap OpenRouter models (including multimodal Nemotron Nano) to compare structured responses without changing client code.
+- **Developer education:** inspect request/response shapes, usage metadata, and reasoning tokens to better understand model behavior in JSON mode.
 
 ## Features
 - **OpenRouter JSON mode client** with runtime schema guards and centralized error handling.
