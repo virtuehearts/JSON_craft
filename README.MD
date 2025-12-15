@@ -19,29 +19,37 @@ JSONCraft is a React + Vite workbench for building, testing, and sharing JSON-on
 - **Tailwind-powered UI** with responsive split layout, usage hints, and retry/stop controls.
 
 ## Getting Started
-1. Install dependencies
+1. **Install dependencies** (Node 18+ recommended)
    ```bash
    npm install
    ```
-2. Copy environment template
+2. **Copy the environment template** and add secrets
    ```bash
    cp .env.example .env.local
-   # Add your OpenRouter key
+   # Required: VITE_OPENROUTER_API_KEY
+   # Optional: VITE_OPENROUTER_BASE_URL, VITE_MODEL, VITE_GOOGLE_CLIENT_ID
    ```
-3. Run the dev server
+3. **Run the dev server**
    ```bash
    npm run dev
    ```
-4. Lint & test
+   The app serves on http://localhost:5173 by default.
+4. **Lint & test locally**
    ```bash
    npm run lint
    npm test
+   ```
+5. **Build for production** (optional smoke test)
+   ```bash
+   npm run build
+   npm run preview
    ```
 
 ## Environment
 - `VITE_OPENROUTER_API_KEY`: API key for authenticated requests.
 - `VITE_OPENROUTER_BASE_URL`: Base URL for OpenRouter (defaults to `https://openrouter.ai/api`).
 - `VITE_MODEL`: JSON-capable model (default `nvidia/nemotron-nano-12b-v2-vl:free`).
+- `VITE_GOOGLE_CLIENT_ID`: Google OAuth client ID for sign-in (planned credits/purchases).
 
 ## Using Nemotron Nano 12B 2 VL via OpenRouter
 
@@ -92,6 +100,31 @@ for await (const chunk of stream) {
 - **Validation** in `src/lib/validators.ts` defines the JSON schema used for both editor linting and assistant output checks.
 - **Persistence** via `localforage` in `src/lib/persistence.ts` with export/import helpers.
 - **API client** in `src/lib/openrouterClient.ts` enforces JSON responses and surfaces rate limits / validation errors.
+
+## Milestone: Locally testable JSONCraft
+
+Use this task list to reach a working, locally testable holodeck (image → JSON) loop. Check items off as they land in the repo.
+
+- [ ] **Environment readiness**
+  - Confirm Node 18+ and npm are installed.
+  - Create `.env.local` with `VITE_OPENROUTER_API_KEY`, optional `VITE_MODEL`, and `VITE_GOOGLE_CLIENT_ID` if enabling auth.
+- [ ] **OpenRouter wiring**
+  - Finish `src/lib/openrouterClient.ts` with JSON-mode enforcement, error normalization, and reasoning token surfacing.
+  - Add a mock/fake client path (flagged in config) to allow local testing without external calls.
+- [ ] **Image upload → analyze flow**
+  - Implement image picker/uploader on the chat page; convert images to base64 for OpenRouter.
+  - Pipe analysis responses into the chat stream with schema validation via `src/lib/validators.ts`.
+- [ ] **JSON editor + validation**
+  - Ensure the editor runs linting with Zod, surfaces repair suggestions, and allows applying the current JSON to the next request.
+  - Add sample presets (e.g., cyberpunk/steampunk) stored in `src/state` slices for quick testing.
+- [ ] **Gallery and persistence**
+  - Persist analyzed images + JSON to `localforage` using `src/lib/persistence.ts` and expose CRUD from the gallery route.
+  - Seed a few fixtures for immediate manual verification.
+- [ ] **Authentication (optional for first test)**
+  - Gate auth behind a feature flag; add Google OAuth sign-in flow when keys exist.
+- [ ] **Quality gates**
+  - Add unit tests for validators, client error handling, and gallery persistence under `src/__tests__`.
+  - Ensure `npm run lint`, `npm test`, and `npm run build` pass in CI/local.
 
 ## Testing & Fixtures
 - Vitest drives unit tests for environment config and schema validation under `src/__tests__`.
