@@ -3,7 +3,9 @@ import { z } from 'zod';
 const envSchema = z.object({
   VITE_OPENROUTER_API_KEY: z.string().optional(),
   VITE_OPENROUTER_BASE_URL: z.string().default('https://openrouter.ai/api'),
-  VITE_MODEL: z.string().default('openai/gpt-4.1-mini')
+  VITE_MODEL: z
+    .string()
+    .default('nvidia/nemotron-nano-12b-v2-vl:free')
 });
 
 type Env = z.infer<typeof envSchema>;
