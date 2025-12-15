@@ -4,6 +4,7 @@ import { RouterProvider, createBrowserRouter } from 'react-router-dom';
 import AppShell from './layouts/AppShell';
 import ChatPage from './pages/ChatPage';
 import GalleryPage from './pages/GalleryPage';
+import VisualGalleryPage from './pages/VisualGalleryPage';
 import './styles/tailwind.css';
 
 const router = createBrowserRouter([
@@ -12,7 +13,8 @@ const router = createBrowserRouter([
     element: <AppShell />,
     children: [
       { index: true, element: <ChatPage /> },
-      { path: 'gallery', element: <GalleryPage /> }
+      { path: 'gallery', element: <GalleryPage /> },
+      { path: 'visual-gallery', element: <VisualGalleryPage /> }
     ]
   }
 ]);
