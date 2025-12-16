@@ -1,6 +1,7 @@
 import { z } from 'zod';
 import { getEnv } from '../config/env';
 import { PromptTemplate } from '../types/prompt';
+import { FALLBACK_IMAGE_PROMPT } from '../config/prompts';
 
 const jsonChoiceSchema = z.object({
   message: z.object({
@@ -27,8 +28,10 @@ const completionSchema = z.object({
 export type JsonChoice = z.infer<typeof jsonChoiceSchema>;
 export type CompletionResponse = z.infer<typeof completionSchema>;
 
+export type PayloadMessage = { role: 'system' | 'user' | 'assistant'; content: string; imageData?: string };
+
 export interface ChatPayload {
-  messages: { role: 'system' | 'user' | 'assistant'; content: string }[];
+  messages: PayloadMessage[];
   template?: PromptTemplate;
   stream?: boolean;
 }
@@ -52,17 +55,39 @@ function buildHeaders() {
 
 export async function sendJsonChat(payload: ChatPayload): Promise<CompletionResponse> {
   const env = getEnv();
+  const messages = [
+    {
+      role: 'system',
+      content:
+        'You are JSONCraft, an assistant that ONLY outputs valid JSON following the provided schema and never plain text. If unsure, return an empty JSON object with an `error` field.'
+    },
+    ...(payload.template
+      ? [
+          {
+            role: 'system',
+            content: `Apply this JSON style: ${payload.template.json}`
+          }
+        ]
+      : []),
+    ...payload.messages.map((message) => {
+      if (message.imageData) {
+        return {
+          role: message.role,
+          content: [
+            { type: 'text', text: message.content || FALLBACK_IMAGE_PROMPT },
+            { type: 'image_url', image_url: { url: message.imageData } }
+          ]
+        };
+      }
+
+      return { role: message.role, content: message.content };
+    })
+  ];
+
   const requestBody = {
     model: env.VITE_MODEL,
     response_format: { type: 'json_object' },
-    messages: [
-      {
-        role: 'system',
-        content:
-          'You are JSONCraft, an assistant that ONLY outputs valid JSON following the provided schema and never plain text. If unsure, return an empty JSON object with an `error` field.'
-      },
-      ...payload.messages
-    ],
+    messages,
     stream: payload.stream ?? false,
     max_output_tokens: 500
   };
