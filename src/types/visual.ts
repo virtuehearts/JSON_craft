@@ -5,4 +5,5 @@ export interface VisualEntry {
   json: string;
   createdAt: number;
   notes?: string;
+  searchableText?: string;
 }
