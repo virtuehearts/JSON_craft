@@ -1,4 +1,5 @@
 # JSONCraft: Image JSON tools
+AI assisted image creation engine. using NVIDIA Nemotron Nano 
 
 JSONCraft is a image workbench for building, testing, and sharing JSON-only prompts with a rapidly evolving front-end for Fal.ai image rendering. It provides a chat-style interface tailored for JSON-mode models so you can prototype prompts, validate outputs, and curate reusable templates without leaving the browser. The project focuses on end-to-end guardrails—authoring, validation, retries, and persistence—to help teams quickly ship structured AI workflows while previewing image renders.
 
