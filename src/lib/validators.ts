@@ -1,6 +1,6 @@
 import { z } from 'zod';
 
-export const promptSchema = z.object({
+const structuredPromptSchema = z.object({
   style: z.string(),
   camera: z.string().optional(),
   subject: z.object({
@@ -18,9 +18,11 @@ export const promptSchema = z.object({
   notes: z.string().optional()
 });
 
+export const promptSchema = z.union([structuredPromptSchema, z.string().min(1)]);
+
 export const assistantResponseSchema = z.object({
   prompt: promptSchema,
-  reasoning: z.array(z.string()).optional()
+  reasoning: z.union([z.array(z.string()), z.string()]).optional()
 });
 
 export type PromptOutput = z.infer<typeof promptSchema>;
