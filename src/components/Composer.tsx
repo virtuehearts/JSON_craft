@@ -1,14 +1,23 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useChatStore } from '../state/chatStore';
 import { FALLBACK_IMAGE_PROMPT } from '../config/prompts';
+import { useUiStore } from '../state/uiStore';
 
 export default function Composer() {
   const { sendMessage, assistantIsTyping, stopAssistant } = useChatStore();
   const [value, setValue] = useState('');
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [uploadError, setUploadError] = useState<string | null>(null);
+  const consumeComposerPrefill = useUiStore((state) => state.consumeComposerPrefill);
 
   const promptText = useMemo(() => value.trim() || FALLBACK_IMAGE_PROMPT, [value]);
+
+  useEffect(() => {
+    const prefill = consumeComposerPrefill();
+    if (prefill) {
+      setValue(prefill);
+    }
+  }, [consumeComposerPrefill]);
 
   const handleSend = async () => {
     await sendMessage(promptText, imagePreview);
