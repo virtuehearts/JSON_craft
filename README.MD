@@ -12,40 +12,13 @@ JSONCraft is a image workbench for building, testing, and sharing JSON-only prom
 - **Post-processing:** design pathways for single-image crop, upscale, and other tweaks after renders complete.
 
 ## Features
-- **OpenRouter JSON mode client** with runtime schema guards and centralized error handling.
+- **JSON mode client** with runtime schema guards and centralized error handling.
 - **Global state via Zustand** separating chat sessions, prompts/styles, and persistence helpers.
 - **Schema validation + guardrails** using Zod with readable error feedback and repair controls.
 - **JSON prompt style editor** with presets, linting, and apply-to-chat actions.
-- **PromptCraft-like persistence** (IndexedDB/localforage) with export/import of sessions + templates.
+- **Prompt-like persistence** (IndexedDB/localforage) with export/import of sessions + templates.
 - **Gallery UX** for browsing, sorting, duplicating, and sharing prompt templates.
 - **Tailwind-powered UI** with responsive split layout, usage hints, and retry/stop controls.
-
-## Getting Started
-1. **Install dependencies** (Node 18+ recommended)
-   ```bash
-   npm install
-   ```
-2. **Copy the environment template** and add secrets
-   ```bash
-   cp .env.example .env.local
-   # Required: VITE_OPENROUTER_API_KEY
-   # Optional: VITE_OPENROUTER_BASE_URL, VITE_MODEL, VITE_GOOGLE_CLIENT_ID
-   ```
-3. **Run the dev server**
-   ```bash
-   npm run dev
-   ```
-   The app serves on http://localhost:5173 by default.
-4. **Lint & test locally**
-   ```bash
-   npm run lint
-   npm test
-   ```
-5. **Build for production** (optional smoke test)
-   ```bash
-   npm run build
-   npm run preview
-   ```
 
 ### Quick start script
 
@@ -66,7 +39,7 @@ You can also use the helper script to set up dependencies, scaffold `.env.local`
 
 ## Using Nemotron Nano 12B 2 VL via OpenRouter
 
-For multimodal chat + image prompts, the default model is set to **Nemotron Nano 12B 2 VL (free)** on OpenRouter. OpenRouter normalizes requests and responses across providers, so you can swap models without changing your client logic.
+For multimodal chat + image prompts, the default model is set to **Nemotron Nano 12B 2 VL (free)** on OpenRouter. OpenRouter normalizes requests and responses across providers, so you can swap models without changing your client logic.  We will replace this with a dedicated server with no need for a OpenRouter key. 
 
 Below is a TypeScript example using the official SDK with streaming enabled so you can read reasoning tokens from `reasoning_details` when the final chunk arrives:
 
