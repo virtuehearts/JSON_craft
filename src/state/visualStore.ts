@@ -8,6 +8,7 @@ interface VisualState {
   init: () => Promise<void>;
   addEntry: (input: Omit<VisualEntry, 'id' | 'createdAt'>) => Promise<void>;
   removeEntry: (id: string) => Promise<void>;
+  updateEntry: (id: string, updates: Partial<Omit<VisualEntry, 'id' | 'createdAt'>>) => Promise<void>;
   exportData: () => Promise<unknown>;
   importData: (payload: unknown) => Promise<void>;
 }
@@ -29,6 +30,13 @@ export const useVisualStore = create<VisualState>((set, get) => ({
     const updated = get().entries.filter((entry) => entry.id !== id);
     set({ entries: updated });
     await saveVisualEntries(updated);
+  },
+  async updateEntry(id, updates) {
+    const updatedEntries = get().entries.map((entry) =>
+      entry.id === id ? { ...entry, ...updates } : entry
+    );
+    set({ entries: updatedEntries });
+    await saveVisualEntries(updatedEntries);
   },
   async exportData() {
     return exportAll();
