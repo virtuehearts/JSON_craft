@@ -57,7 +57,7 @@ const stream = await openrouter.chat.send({
   messages: [
     {
       role: "user",
-      content: "How many r's are in the word 'strawberry'?"
+      content: "make a complete detailed JSON output of this image to be able to recreate it in an image generator. paying heed to style, camera angle, pose, hair, outfit , background layer, expression. face details ect. "
     }
   ],
   stream: true,
