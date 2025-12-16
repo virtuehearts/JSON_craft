@@ -147,3 +147,6 @@ Use this task list to reach a working, locally testable holodeck (image → JSON
 - Edit JSON styles with inline linting; apply the active style to the next chat request.
 - Save templates with tags, duplicate them, or export/import a bundle for sharing.
 - Gallery view offers quick actions plus search/filter controls.
+
+## Credits
+- Inspired by [virtuehearts/JSON_prompt_tool](https://github.com/virtuehearts/JSON_prompt_tool), which informed our approach to using prompts for generating styles, genres, moods, consistent models, and scenes across image models (Seedream, FLUX, Z-Image, etc.) on Fal.ai.
