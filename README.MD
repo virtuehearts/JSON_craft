@@ -1,6 +1,6 @@
 # JSONCraft: Image JSON tools
 
-JSONCraft is a React + Vite workbench for building, testing, and sharing JSON-only prompts against OpenRouter, with a rapidly evolving front-end for Fal.ai image rendering. It provides a chat-style interface tailored for JSON-mode models so you can prototype prompts, validate outputs, and curate reusable templates without leaving the browser. The project focuses on end-to-end guardrails—authoring, validation, retries, and persistence—to help teams quickly ship structured AI workflows while previewing image renders.
+JSONCraft is a image workbench for building, testing, and sharing JSON-only prompts with a rapidly evolving front-end for Fal.ai image rendering. It provides a chat-style interface tailored for JSON-mode models so you can prototype prompts, validate outputs, and curate reusable templates without leaving the browser. The project focuses on end-to-end guardrails—authoring, validation, retries, and persistence—to help teams quickly ship structured AI workflows while previewing image renders.
 
 ## What can I use JSONCraft for?
 - **Prompt prototyping:** iterate on JSON-only prompts with live schema validation before integrating them into production code.
