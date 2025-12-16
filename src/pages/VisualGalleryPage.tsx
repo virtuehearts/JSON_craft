@@ -12,10 +12,21 @@ export default function VisualGalleryPage() {
   const { entries, init, removeEntry, updateEntry } = useVisualStore();
   const setComposerPrefill = useUiStore((state) => state.setComposerPrefill);
   const [selectedId, setSelectedId] = useState<string | null>(null);
+  const [searchTerm, setSearchTerm] = useState('');
 
   const selectedEntry = useMemo<VisualEntry | null>(() => {
     return entries.find((entry) => entry.id === selectedId) || null;
   }, [entries, selectedId]);
+
+  const filteredEntries = useMemo(() => {
+    if (!searchTerm) {
+      return entries;
+    }
+    const searchTermLower = searchTerm.toLowerCase();
+    return entries.filter((entry) =>
+      entry.searchableText ? entry.searchableText.includes(searchTermLower) : false
+    );
+  }, [entries, searchTerm]);
 
   useEffect(() => {
     init();
@@ -49,10 +60,20 @@ export default function VisualGalleryPage() {
         </div>
       </div>
 
+      <div className="mb-4">
+        <input
+          type="text"
+          placeholder="Search entries..."
+          className="w-full rounded border border-slate-700 bg-slate-950 px-3 py-2 text-sm text-white focus:border-accent focus:outline-none"
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+        />
+      </div>
+
       <VisualEntryForm />
 
       <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-        {entries.map((entry) => (
+        {filteredEntries.map((entry) => (
           <VisualEntryThumbnail
             key={entry.id}
             entry={entry}
@@ -61,9 +82,9 @@ export default function VisualGalleryPage() {
           />
         ))}
       </div>
-      {!entries.length && (
+      {!filteredEntries.length && (
         <div className="rounded-lg border border-dashed border-slate-700 p-6 text-center text-sm text-gray-400">
-          No captures saved yet. Upload an image and paste the JSON output from the assistant to archive it here.
+          {searchTerm ? `No entries match "${searchTerm}"` : 'No captures saved yet. Upload an image to generate a searchable gallery.'}
         </div>
       )}
 

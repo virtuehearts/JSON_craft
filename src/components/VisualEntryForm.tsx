@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useVisualStore } from '../state/visualStore';
+import { sendJsonChat } from '../lib/openrouterClient';
 
 export default function VisualEntryForm() {
   const { addEntry } = useVisualStore();
@@ -9,6 +10,7 @@ export default function VisualEntryForm() {
   const [imageData, setImageData] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [isSaving, setIsSaving] = useState(false);
+  const [isAnalyzing, setIsAnalyzing] = useState(false);
 
   const handleFileChange = (file?: File) => {
     if (!file) return;
@@ -18,6 +20,25 @@ export default function VisualEntryForm() {
     };
     reader.onerror = () => setError('Failed to read image file');
     reader.readAsDataURL(file);
+  };
+
+  const handleAnalyzeClick = async () => {
+    if (!imageData) {
+      setError('Please select an image first.');
+      return;
+    }
+    setIsAnalyzing(true);
+    setError(null);
+    try {
+      const response = await sendJsonChat({
+        messages: [{ role: 'user', content: 'Analyze this image and generate a detailed JSON description.', imageData }]
+      });
+      const jsonContent = response.choices[0].message.content;
+      setJson(jsonContent);
+    } catch (error) {
+      setError('Failed to analyze image. Please try again.');
+    }
+    setIsAnalyzing(false);
   };
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
@@ -51,7 +72,7 @@ export default function VisualEntryForm() {
         <div>
           <p className="text-xs uppercase tracking-[0.2em] text-gray-500">Capture</p>
           <h3 className="text-lg font-semibold text-white">Add photo + JSON to gallery</h3>
-          <p className="text-sm text-gray-400">Upload the image you sent and paste the JSON output to archive them together.</p>
+          <p className="text-sm text-gray-400">Upload an image to automatically generate a searchable JSON analysis.</p>
         </div>
         <label className="inline-flex cursor-pointer items-center gap-2 rounded border border-slate-700 px-3 py-2 text-sm text-gray-100 transition hover:border-accent">
           <input
@@ -87,11 +108,19 @@ export default function VisualEntryForm() {
         </div>
         <div className="space-y-2">
           <label className="block text-xs uppercase tracking-[0.2em] text-gray-500">JSON output</label>
+          <button
+            type="button"
+            className="rounded bg-accent px-4 py-2 font-semibold text-black transition hover:brightness-110 disabled:opacity-50"
+            onClick={handleAnalyzeClick}
+            disabled={isAnalyzing || !imageData}
+          >
+            {isAnalyzing ? 'Analyzing…' : 'Analyze Image'}
+          </button>
           <textarea
             className="min-h-[180px] w-full rounded border border-slate-700 bg-slate-950 px-3 py-2 font-mono text-xs text-amber-50 focus:border-accent focus:outline-none"
-            placeholder="Paste the assistant response here"
+            placeholder="AI-generated JSON will appear here"
             value={json}
-            onChange={(event) => setJson(event.target.value)}
+            readOnly
           />
         </div>
       </div>

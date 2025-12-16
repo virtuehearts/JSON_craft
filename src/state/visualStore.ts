@@ -21,7 +21,8 @@ export const useVisualStore = create<VisualState>((set, get) => ({
   },
   async addEntry(input) {
     const now = Date.now();
-    const entry: VisualEntry = { ...input, id: nanoid(), createdAt: now };
+    const searchableText = [input.title, input.notes, input.json].join(' ').toLowerCase();
+    const entry: VisualEntry = { ...input, id: nanoid(), createdAt: now, searchableText };
     const updated = [entry, ...get().entries];
     set({ entries: updated });
     await saveVisualEntries(updated);
@@ -32,9 +33,14 @@ export const useVisualStore = create<VisualState>((set, get) => ({
     await saveVisualEntries(updated);
   },
   async updateEntry(id, updates) {
-    const updatedEntries = get().entries.map((entry) =>
-      entry.id === id ? { ...entry, ...updates } : entry
-    );
+    const updatedEntries = get().entries.map((entry) => {
+      if (entry.id === id) {
+        const updatedEntry = { ...entry, ...updates };
+        updatedEntry.searchableText = [updatedEntry.title, updatedEntry.notes, updatedEntry.json].join(' ').toLowerCase();
+        return updatedEntry;
+      }
+      return entry;
+    });
     set({ entries: updatedEntries });
     await saveVisualEntries(updatedEntries);
   },
