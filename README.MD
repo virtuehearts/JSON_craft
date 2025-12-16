@@ -1,13 +1,15 @@
-# JSONCraft – Holodeck Command
+# JSONCraft: Image JSON Command & Fal.ai render front-end
 
-JSONCraft is a React + Vite workbench for building, testing, and sharing JSON-only prompts against OpenRouter. It provides a chat-style interface tailored for JSON-mode models so you can prototype prompts, validate outputs, and curate reusable templates without leaving the browser. The project focuses on end-to-end guardrails—authoring, validation, retries, and persistence—to help teams quickly ship structured AI workflows.
+JSONCraft is a React + Vite workbench for building, testing, and sharing JSON-only prompts against OpenRouter, with a rapidly evolving front-end for Fal.ai image rendering. It provides a chat-style interface tailored for JSON-mode models so you can prototype prompts, validate outputs, and curate reusable templates without leaving the browser. The project focuses on end-to-end guardrails—authoring, validation, retries, and persistence—to help teams quickly ship structured AI workflows while previewing image renders.
 
 ## What can I use JSONCraft for?
 - **Prompt prototyping:** iterate on JSON-only prompts with live schema validation before integrating them into production code.
 - **Team workflows:** share prompt templates through the gallery, export/import bundles, and keep presets consistent across teammates.
 - **Guardrailed chat experiences:** combine the chat shell with Zod-based validation to enforce JSON responses and trigger automated repairs or retries.
-- **Model exploration:** swap OpenRouter models (including multimodal Nemotron Nano) to compare structured responses without changing client code.
+- **Model exploration:** swap OpenRouter models (including multimodal Nemotron Nano) to compare structured responses without changing client code, and list Fal.ai render models for easy selection.
 - **Developer education:** inspect request/response shapes, usage metadata, and reasoning tokens to better understand model behavior in JSON mode.
+- **Render controls:** plan for batch render runs, camera angle control, and quality settings so users can iterate on image outputs directly from the JSON command layer.
+- **Post-processing:** design pathways for single-image crop, upscale, and other tweaks after renders complete.
 
 ## Features
 - **OpenRouter JSON mode client** with runtime schema guards and centralized error handling.
@@ -58,6 +60,9 @@ You can also use the helper script to set up dependencies, scaffold `.env.local`
 - `VITE_OPENROUTER_BASE_URL`: Base URL for OpenRouter (defaults to `https://openrouter.ai/api`).
 - `VITE_MODEL`: JSON-capable model (default `nvidia/nemotron-nano-12b-v2-vl:free`).
 - `VITE_GOOGLE_CLIENT_ID`: Google OAuth client ID for sign-in (planned credits/purchases).
+- `VITE_FAL_API_KEY` (planned): API key stored locally in settings for Fal.ai rendering.
+
+> **Fal.ai partnership vision**: The settings page will allow users to add their Fal.ai API key (stored locally). Longer term, we will ship a hosted service with Google authentication and run it for free, migrating processing off OpenRouter and seeking Fal.ai sponsorship.
 
 ## Using Nemotron Nano 12B 2 VL via OpenRouter
 
