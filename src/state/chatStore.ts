@@ -84,10 +84,12 @@ export const useChatStore = create<ChatState>((set, get) => ({
 
       const contentText = result.choices[0].message.content;
       const validation = validateOutput(contentText);
+      const parsedContent = validation.ok ? validation.data : validation.parsed;
+      const renderedContent = parsedContent ? JSON.stringify(parsedContent, null, 2) : contentText;
       const assistantMessage: ChatMessage = {
         id: nanoid(),
         role: 'assistant',
-        content: validation.ok ? JSON.stringify(validation.data, null, 2) : contentText,
+        content: renderedContent,
         createdAt: Date.now(),
         usage: { tokens: result.choices[0].usage?.total_tokens || 0 },
         error: validation.ok ? undefined : 'Validation failed'
@@ -101,12 +103,12 @@ export const useChatStore = create<ChatState>((set, get) => ({
           validationErrors: validation.ok ? null : JSON.stringify(validation.error)
         };
       });
-      if (userMessage.imageData && validation.ok) {
+      if (userMessage.imageData && (validation.ok || validation.parsed)) {
         const visualStore = useVisualStore.getState();
         await visualStore.addEntry({
           title: `Capture ${new Date().toLocaleString()}`,
           imageData: userMessage.imageData,
-          json: assistantMessage.content,
+          json: renderedContent,
           notes: `Auto-saved from session ${sessionId}`
         });
       }

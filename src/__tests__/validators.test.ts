@@ -16,4 +16,10 @@ describe('validators', () => {
     const invalid = validateOutput('not json');
     expect(invalid.ok).toBe(false);
   });
+
+  test('captures parsed content on schema failure', () => {
+    const invalidSchema = validateOutput('{"unexpected":true}');
+    expect(invalidSchema.ok).toBe(false);
+    expect(invalidSchema.parsed).toBeTruthy();
+  });
 });
