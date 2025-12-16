@@ -12,9 +12,17 @@ type Env = z.infer<typeof envSchema>;
 
 let envCache: Env | null = null;
 
+function readRuntimeApiKey() {
+  if (typeof window === 'undefined') return undefined;
+  return localStorage.getItem('openrouter_api_key') || undefined;
+}
+
 export function getEnv(): Env {
   if (envCache) return envCache;
-  const parsed = envSchema.safeParse(import.meta.env);
+  const parsed = envSchema.safeParse({
+    ...import.meta.env,
+    VITE_OPENROUTER_API_KEY: readRuntimeApiKey() || import.meta.env.VITE_OPENROUTER_API_KEY
+  });
   if (!parsed.success) {
     // eslint-disable-next-line no-console
     console.warn('Environment validation failed', parsed.error.flatten().fieldErrors);
@@ -23,4 +31,18 @@ export function getEnv(): Env {
     envCache = parsed.data;
   }
   return envCache;
+}
+
+export function setRuntimeApiKey(key: string) {
+  if (typeof window !== 'undefined') {
+    localStorage.setItem('openrouter_api_key', key);
+  }
+  envCache = null;
+}
+
+export function clearRuntimeApiKey() {
+  if (typeof window !== 'undefined') {
+    localStorage.removeItem('openrouter_api_key');
+  }
+  envCache = null;
 }

@@ -1,6 +1,7 @@
 import { ChatMessage } from '../types/chat';
 import { useChatStore } from '../state/chatStore';
 import { clsx } from 'clsx';
+import { FALLBACK_IMAGE_PROMPT } from '../config/prompts';
 
 interface Props {
   messages: ChatMessage[];
@@ -23,6 +24,11 @@ export default function MessageList({ messages }: Props) {
             {message.usage?.tokens ? <span>{message.usage.tokens} tokens</span> : null}
           </div>
           <pre className="whitespace-pre-wrap font-mono text-xs leading-relaxed text-gray-200">{message.content}</pre>
+          {message.imageData && (
+            <div className="mt-3 overflow-hidden rounded-lg border border-slate-800 bg-black/20">
+              <img src={message.imageData} alt="User upload" className="max-h-64 w-full object-contain" />
+            </div>
+          )}
           {message.error && (
             <div className="mt-2 flex items-center justify-between text-xs text-rose-300">
               <span>Error: {message.error}</span>
@@ -40,7 +46,7 @@ export default function MessageList({ messages }: Props) {
       )}
       {!messages.length && (
         <div className="flex flex-1 items-center justify-center text-sm text-gray-500">
-          No messages yet. Send a prompt to begin.
+          No messages yet. Upload an image to chat and we will ask: “{FALLBACK_IMAGE_PROMPT}”
         </div>
       )}
     </div>

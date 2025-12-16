@@ -5,6 +5,8 @@ import { sendJsonChat } from '../lib/openrouterClient';
 import { saveSession, loadSessions, deleteSession } from '../lib/persistence';
 import { validateOutput } from '../lib/validators';
 import { usePromptStore } from './promptStore';
+import { useVisualStore } from './visualStore';
+import { FALLBACK_IMAGE_PROMPT } from '../config/prompts';
 
 interface ChatState {
   sessions: Record<string, { meta: ChatSession; messages: ChatMessage[] }>;
@@ -15,7 +17,7 @@ interface ChatState {
   usageTokens: number;
   init: () => Promise<void>;
   startSession: () => Promise<void>;
-  sendMessage: (content: string) => Promise<void>;
+  sendMessage: (content: string, imageData?: string | null) => Promise<void>;
   retryMessage: (messageId: string) => Promise<void>;
   stopAssistant: () => void;
   deleteSession: (id: string) => Promise<void>;
@@ -49,15 +51,17 @@ export const useChatStore = create<ChatState>((set, get) => ({
     set((state) => ({ sessions: { ...state.sessions, [id]: { meta, messages: [] } }, currentSessionId: id }));
     await saveSession(meta, []);
   },
-  async sendMessage(content: string) {
+  async sendMessage(content: string, imageData?: string | null) {
     const sessionId = get().currentSessionId;
     if (!sessionId) return;
     const template = usePromptStore.getState().activeTemplate;
+    const normalizedContent = content.trim() || FALLBACK_IMAGE_PROMPT;
     const userMessage: ChatMessage = {
       id: nanoid(),
       role: 'user',
-      content,
-      createdAt: Date.now()
+      content: normalizedContent,
+      createdAt: Date.now(),
+      imageData: imageData || undefined
     };
     set((state) => {
       const session = state.sessions[sessionId];
@@ -74,10 +78,7 @@ export const useChatStore = create<ChatState>((set, get) => ({
 
     try {
       const result = await sendJsonChat({
-        messages: [
-          { role: 'user', content },
-          template ? { role: 'system', content: `Apply this JSON style: ${template.json}` } : undefined
-        ].filter(Boolean) as { role: 'system' | 'user'; content: string }[],
+        messages: [{ role: 'user', content: normalizedContent, imageData: imageData || undefined }],
         template
       });
 
@@ -100,6 +101,15 @@ export const useChatStore = create<ChatState>((set, get) => ({
           validationErrors: validation.ok ? null : JSON.stringify(validation.error)
         };
       });
+      if (userMessage.imageData && validation.ok) {
+        const visualStore = useVisualStore.getState();
+        await visualStore.addEntry({
+          title: `Capture ${new Date().toLocaleString()}`,
+          imageData: userMessage.imageData,
+          json: assistantMessage.content,
+          notes: `Auto-saved from session ${sessionId}`
+        });
+      }
       await saveSession(get().sessions[sessionId].meta, get().sessions[sessionId].messages);
     } catch (error) {
       const assistantMessage: ChatMessage = {
@@ -125,7 +135,7 @@ export const useChatStore = create<ChatState>((set, get) => ({
     const session = get().sessions[sessionId];
     const message = session.messages.find((m) => m.id === messageId);
     if (!message) return;
-    await get().sendMessage(message.content);
+    await get().sendMessage(message.content, message.imageData);
   },
   stopAssistant() {
     set({ assistantIsTyping: false });
