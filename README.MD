@@ -1,50 +1,92 @@
-# JSONCraft: Image JSON tools
-AI assisted image creation engine. using NVIDIA Nemotron Nano 
+# JSONCraft: AI-Assisted Image Creation Engine
 
-JSONCraft is a image workbench for building, testing, and sharing JSON-only prompts with a rapidly evolving front-end for Fal.ai image rendering. It provides a chat-style interface tailored for JSON-mode models so you can prototype prompts, validate outputs, and curate reusable templates without leaving the browser. The project focuses on end-to-end guardrails—authoring, validation, retries, and persistence—to help teams quickly ship structured AI workflows while previewing image renders.
+JSONCraft is an open-source workbench for building, indexing, and editing AI-generated images at the JSON level. Powered by NVIDIA's Nemotron Nano via OpenRouter, it provides a chat-style interface for crafting structured JSON prompts that drive image renders on platforms like Fal.ai. Prototype prompts, validate schemas, and curate reusable templates—all in-browser—with seamless extensibility for leading AI stacks.
 
-## What can I use JSONCraft for?
-- **Prompt prototyping:** iterate on JSON-only prompts with live schema validation before integrating them into production code.
-- **Team workflows:** share prompt templates through the gallery, export/import bundles, and keep presets consistent across teammates.
-- **Guardrailed chat experiences:** combine the chat shell with Zod-based validation to enforce JSON responses and trigger automated repairs or retries.
-- **Model exploration:** swap OpenRouter models (including multimodal Nemotron Nano) to compare structured responses without changing client code, and list Fal.ai render models for easy selection.
-- **Developer education:** inspect request/response shapes, usage metadata, and reasoning tokens to better understand model behavior in JSON mode.
-- **Render controls:** plan for batch render runs, camera angle control, and quality settings so users can iterate on image outputs directly from the JSON command layer.
-- **Post-processing:** design pathways for single-image crop, upscale, and other tweaks after renders complete.
+Key Vision: Transform images into editable JSON objects (e.g., tweak "camera_angle" or "background_layer" in JSON to regenerate). Ideal for integrating into xAI's Grok for reasoning-driven edits, OpenAI's DALL-E for high-fidelity outputs, Fal.ai's fast inference, or Openrouter's model routing for multi-provider workflows.
 
-## Features
-- **JSON mode client** with runtime schema guards and centralized error handling.
-- **Global state via Zustand** separating chat sessions, prompts/styles, and persistence helpers.
-- **Schema validation + guardrails** using Zod with readable error feedback and repair controls.
-- **JSON prompt style editor** with presets, linting, and apply-to-chat actions.
-- **Prompt-like persistence** (IndexedDB/localforage) with export/import of sessions + templates.
-- **Gallery UX** for browsing, sorting, duplicating, and sharing prompt templates.
-- **Tailwind-powered UI** with responsive split layout, usage hints, and retry/stop controls.
+What can I use JSONCraft for?
 
-### Quick start script
+* Image Indexing & Editing: Analyze existing images into detailed JSON schemas (style, pose, expression, etc.) for versioning and batch edits—perfect for xAI's Grok to add reasoning layers or OpenAI's APIs for iterative refinement.
+* Render Pipeline Integration: Preview and queue Fal.ai renders directly from JSON commands, with controls for batch processing, upscaling, and post-edits.
+* Model-Agnostic Prototyping: Swap between OpenRouter-hosted models (e.g., Nemotron Nano) and custom endpoints, making it a testbed for OpenAI's structured outputs or xAI's advanced multimodal capabilities.
+* Collaborative Stacks: Share JSON templates across teams, indexing renders for reproducibility—enabling Openrouter.ai to showcase as a reference app.
+* Prompt prototyping: iterate on JSON-only prompts with live schema validation before integrating them into production code.
+* Team workflows: share prompt templates through the gallery, export/import bundles, and keep presets consistent across teammates.
+* Guardrailed chat experiences: combine the chat shell with Zod-based validation to enforce JSON responses and trigger automated repairs or retries.
+* Model exploration: swap OpenRouter models (including multimodal Nemotron Nano) to compare structured responses without changing client code, and list Fal.ai render models for easy selection.
+* Developer education: inspect request/response shapes, usage metadata, and reasoning tokens to better understand model behavior in JSON mode.
+* Render controls: plan for batch render runs, camera angle control, and quality settings so users can iterate on image outputs directly from the JSON command layer.
+* Post-processing: design pathways for single-image crop, upscale, and other tweaks after renders complete.
 
-You can also use the helper script to set up dependencies, scaffold `.env.local` from `.env.example`, and start the dev server in one step:
+Features
 
-```bash
+* Extensible API Clients: Built-in support for OpenRouter; easily fork for xAI Grok APIs, OpenAI endpoints, or direct Fal.ai integration.
+* JSON-Level Image Controls: Edit renders by modifying JSON fields (e.g., "outfit": "cyberpunk" → regenerate), with indexing for version history.
+* Multimodal Guardrails: Zod validation ensures JSON outputs from models like Nemotron Nano, with auto-retries—compatible with OpenAI's JSON mode.
+* Partnership-Ready Hooks: Local Fal.ai key storage; planned hosted version with sponsorship potential for Fal.ai/Openrouter.ai.
+* JSON mode client with runtime schema guards and centralized error handling.
+* Global state via Zustand separating chat sessions, prompts/styles, and persistence helpers.
+* Schema validation + guardrails using Zod with readable error feedback and repair controls.
+* JSON prompt style editor with presets, linting, and apply-to-chat actions.
+* Prompt-like persistence (IndexedDB/localforage) with export/import of sessions + templates.
+* Gallery UX for browsing, sorting, duplicating, and sharing prompt templates.
+* Tailwind-powered UI with responsive split layout, usage hints, and retry/stop controls.
+
+## Integration Guides
+
+JSONCraft is designed for easy stacking with top AI providers:
+
+- **xAI (Grok)**: Extend the OpenRouter client to route via Grok APIs for reasoning-enhanced JSON prompts (e.g., "reason about optimal camera angle"). Example: Add a `grokEndpoint` config for seamless swaps.
+- **OpenAI**: Swap models to GPT-4o or DALL-E endpoints for JSON-structured image gen. Use our SDK example to stream responses and edit JSON for regenerations.
+- **Fal.ai**: Native render preview with API key; fork for batch jobs or custom models (e.g., FLUX). Vision: Co-host a version for free tier users.
+- **Openrouter.ai**: Default integration; use as a showcase for model exploration. Contribute presets for new models to mutual benefit.
+
+See `docs/integrations.md` for code snippets and setup.
+
+Quick start script
+You can also use the helper script to set up dependencies, scaffold .env.local from .env.example, and start the dev server in one step:
+
+```
 ./JSON_craft start
 ```
 
-## Environment
-- `VITE_OPENROUTER_API_KEY`: API key for authenticated requests.
-- `VITE_OPENROUTER_BASE_URL`: Base URL for OpenRouter (defaults to `https://openrouter.ai/api`).
-- `VITE_MODEL`: JSON-capable model (default `nvidia/nemotron-nano-12b-v2-vl:free`).
-- `VITE_GOOGLE_CLIENT_ID`: Google OAuth client ID for sign-in (planned credits/purchases).
-- `VITE_FAL_API_KEY` (planned): API key stored locally in settings for Fal.ai rendering.
+Environment
 
-> **Fal.ai partnership vision**: The settings page will allow users to add their Fal.ai API key (stored locally). Longer term, we will ship a hosted service with Google authentication and run it for free, migrating processing off OpenRouter and seeking Fal.ai sponsorship.
+* VITE_OPENROUTER_API_KEY: API key for authenticated requests.
 
-## Using Nemotron Nano 12B 2 VL via OpenRouter
+* VITE_OPENROUTER_BASE_URL: Base URL for OpenRouter (defaults to https://openrouter.ai/api).
 
-For multimodal chat + image prompts, the default model is set to **Nemotron Nano 12B 2 VL (free)** on OpenRouter. OpenRouter normalizes requests and responses across providers, so you can swap models without changing your client logic.  We will replace this with a dedicated server with no need for a OpenRouter key. 
+* VITE_MODEL: JSON-capable model (default nvidia/nemotron-nano-12b-v2-vl:free).
 
-Below is a TypeScript example using the official SDK with streaming enabled so you can read reasoning tokens from `reasoning_details` when the final chunk arrives:
+* VITE_GOOGLE_CLIENT_ID: Google OAuth client ID for sign-in (planned credits/purchases).
 
-```ts
+* VITE_FAL_API_KEY (planned): API key stored locally in settings for Fal.ai rendering.
+
+## Partnership Visions
+
+- **Fal.ai**: Local API key support today; seeking sponsorship for a hosted version with optimized renders (e.g., JSON → batch upscale).
+- **Openrouter.ai**: Already powered by your API; let's collaborate on official templates or a reference implementation for JSON-mode users.
+- **xAI**: Integrate Grok for advanced JSON reasoning in image pipelines—e.g., auto-generate/edit JSON from natural language.
+- **OpenAI**: Align with your JSON tools; potential for DALL-E wrappers to enable structured, editable image workflows.
+
+Interested? Open an issue or PR—we're open to co-development!
+
+Using Nemotron Nano 12B 2 VL via OpenRouter
+For multimodal chat + image prompts, the default model is set to Nemotron Nano 12B 2 VL (free) on OpenRouter. OpenRouter normalizes requests and responses across providers, so you can swap models without changing your client logic. We will replace this with a dedicated server with no need for a OpenRouter key.
+Below is a TypeScript example using the official SDK with streaming enabled so you can read reasoning tokens from reasoning_details when the final chunk arrives:
+
+```
+// Example: Edit JSON to regenerate image via Fal.ai/OpenAI
+const editedPrompt = {
+  style: "cyberpunk",
+  camera_angle: "low-angle",
+  pose: "dynamic",
+  // ... other fields
+};
+// Send to renderer (e.g., Fal.ai endpoint)
+```
+
+```
 import { OpenRouter } from "@openrouter/sdk";
 
 const openrouter = new OpenRouter({
@@ -81,46 +123,76 @@ for await (const chunk of stream) {
 }
 ```
 
-## Architecture Notes
-- **Routing** via React Router with `/` for chat and `/gallery` for saved templates.
-- **State** lives in `src/state` with dedicated slices for chat and prompt management.
-- **Validation** in `src/lib/validators.ts` defines the JSON schema used for both editor linting and assistant output checks.
-- **Persistence** via `localforage` in `src/lib/persistence.ts` with export/import helpers.
-- **API client** in `src/lib/openrouterClient.ts` enforces JSON responses and surfaces rate limits / validation errors.
+Architecture Notes
 
-## Milestone: Locally testable JSONCraft
+* Routing via React Router with / for chat and /gallery for saved templates.
 
+* State lives in src/state with dedicated slices for chat and prompt management.
+
+* Validation in src/lib/validators.ts defines the JSON schema used for both editor linting and assistant output checks.
+
+* Persistence via localforage in src/lib/persistence.ts with export/import helpers.
+
+* API client in src/lib/openrouterClient.ts enforces JSON responses and surfaces rate limits / validation errors.
+
+Milestone: Locally testable JSONCraft
 Use this task list to reach a working, locally testable holodeck (image → JSON) loop. Check items off as they land in the repo.
 
-- [ ] **Environment readiness**
-  - Confirm Node 18+ and npm are installed.
-  - Create `.env.local` with `VITE_OPENROUTER_API_KEY`, optional `VITE_MODEL`, and `VITE_GOOGLE_CLIENT_ID` if enabling auth.
-- [ ] **OpenRouter wiring**
-  - Finish `src/lib/openrouterClient.ts` with JSON-mode enforcement, error normalization, and reasoning token surfacing.
-  - Add a mock/fake client path (flagged in config) to allow local testing without external calls.
-- [ ] **Image upload → analyze flow**
-  - Implement image picker/uploader on the chat page; convert images to base64 for OpenRouter.
-  - Pipe analysis responses into the chat stream with schema validation via `src/lib/validators.ts`.
-- [ ] **JSON editor + validation**
-  - Ensure the editor runs linting with Zod, surfaces repair suggestions, and allows applying the current JSON to the next request.
-  - Add sample presets (e.g., cyberpunk/steampunk) stored in `src/state` slices for quick testing.
-- [ ] **Gallery and persistence**
-  - Persist analyzed images + JSON to `localforage` using `src/lib/persistence.ts` and expose CRUD from the gallery route.
-  - Seed a few fixtures for immediate manual verification.
-- [ ] **Authentication (optional for first test)**
-  - Gate auth behind a feature flag; add Google OAuth sign-in flow when keys exist.
-- [ ] **Quality gates**
-  - Add unit tests for validators, client error handling, and gallery persistence under `src/__tests__`.
-  - Ensure `npm run lint`, `npm test`, and `npm run build` pass in CI/local.
+* Environment readiness
 
-## Testing & Fixtures
-- Vitest drives unit tests for environment config and schema validation under `src/__tests__`.
-- A mock-friendly architecture makes it easy to stub `fetch` for OpenRouter responses.
+  * Confirm Node 18+ and npm are installed.
 
-## JSON Style Editor & Gallery
-- Edit JSON styles with inline linting; apply the active style to the next chat request.
-- Save templates with tags, duplicate them, or export/import a bundle for sharing.
-- Gallery view offers quick actions plus search/filter controls.
+  * Create .env.local with VITE_OPENROUTER_API_KEY, optional VITE_MODEL, and VITE_GOOGLE_CLIENT_ID if enabling auth.
 
-## Credits
-- Inspired by [virtuehearts/JSON_prompt_tool](https://github.com/virtuehearts/JSON_prompt_tool), which informed our approach to using prompts for generating styles, genres, moods, consistent models, and scenes across image models (Seedream, FLUX, Z-Image, etc.) on Fal.ai.
+* OpenRouter wiring
+
+  * Finish src/lib/openrouterClient.ts with JSON-mode enforcement, error normalization, and reasoning token surfacing.
+
+  * Add a mock/fake client path (flagged in config) to allow local testing without external calls.
+
+* Image upload → analyze flow
+
+  * Implement image picker/uploader on the chat page; convert images to base64 for OpenRouter.
+
+  * Pipe analysis responses into the chat stream with schema validation via src/lib/validators.ts.
+
+* JSON editor + validation
+
+  * Ensure the editor runs linting with Zod, surfaces repair suggestions, and allows applying the current JSON to the next request.
+
+  * Add sample presets (e.g., cyberpunk/steampunk) stored in src/state slices for quick testing.
+
+* Gallery and persistence
+
+  * Persist analyzed images + JSON to localforage using src/lib/persistence.ts and expose CRUD from the gallery route.
+
+  * Seed a few fixtures for immediate manual verification.
+
+* Authentication (optional for first test)
+
+  * Gate auth behind a feature flag; add Google OAuth sign-in flow when keys exist.
+
+* Quality gates
+
+  * Add unit tests for validators, client error handling, and gallery persistence under src/__tests__.
+
+  * Ensure npm run lint, npm test, and npm run build pass in CI/local.
+
+Testing & Fixtures
+
+* Vitest drives unit tests for environment config and schema validation under src/__tests__.
+
+* A mock-friendly architecture makes it easy to stub fetch for OpenRouter responses.
+
+JSON Style Editor & Gallery
+
+* Edit JSON styles with inline linting; apply the active style to the next chat request.
+
+* Save templates with tags, duplicate them, or export/import a bundle for sharing.
+
+* Gallery view offers quick actions plus search/filter controls.
+
+Credits
+
+* Inspired by virtuehearts/JSON_prompt_tool, which informed our approach to using prompts for generating styles, genres, moods, consistent models, and scenes across image models (Seedream, FLUX, Z-Image, etc.) on Fal.ai.
+* Built for extensibility—contributions from xAI/OpenAI/Fal.ai/Openrouter communities welcome.
