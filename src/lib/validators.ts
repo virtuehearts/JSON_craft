@@ -24,16 +24,21 @@ export const assistantResponseSchema = z.object({
 });
 
 export type PromptOutput = z.infer<typeof promptSchema>;
+export type AssistantResponse = z.infer<typeof assistantResponseSchema>;
 
-export function validateOutput(raw: string) {
+export type ValidationResult =
+  | { ok: true; data: AssistantResponse }
+  | { ok: false; error: unknown; parsed?: unknown };
+
+export function validateOutput(raw: string): ValidationResult {
   try {
     const parsed = JSON.parse(raw);
     const result = assistantResponseSchema.safeParse(parsed);
     if (result.success) {
-      return { ok: true as const, data: result.data };
+      return { ok: true, data: result.data };
     }
-    return { ok: false as const, error: result.error.flatten().fieldErrors };
+    return { ok: false, error: result.error.flatten().fieldErrors, parsed };
   } catch (error) {
-    return { ok: false as const, error: (error as Error).message };
+    return { ok: false, error: (error as Error).message };
   }
 }
