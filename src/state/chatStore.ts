@@ -8,6 +8,14 @@ import { usePromptStore } from './promptStore';
 import { useVisualStore } from './visualStore';
 import { FALLBACK_IMAGE_PROMPT } from '../config/prompts';
 
+const WELCOME_MESSAGE: ChatMessage = {
+  id: 'welcome',
+  role: 'assistant',
+  content:
+    'Hello, how can I help you today? I am JSONCraft: AI-Assisted Image Creation Engine, specializing in editing JSON for images and helping you make amazing photos.',
+  createdAt: Date.now()
+};
+
 interface ChatState {
   sessions: Record<string, { meta: ChatSession; messages: ChatMessage[] }>;
   currentSessionId: string | null;
@@ -21,6 +29,7 @@ interface ChatState {
   retryMessage: (messageId: string) => Promise<void>;
   stopAssistant: () => void;
   deleteSession: (id: string) => Promise<void>;
+  clearChat: (id: string) => Promise<void>;
 }
 
 export const useChatStore = create<ChatState>((set, get) => ({
@@ -48,8 +57,12 @@ export const useChatStore = create<ChatState>((set, get) => ({
       createdAt: Date.now(),
       updatedAt: Date.now()
     };
-    set((state) => ({ sessions: { ...state.sessions, [id]: { meta, messages: [] } }, currentSessionId: id }));
-    await saveSession(meta, []);
+    const messages = [WELCOME_MESSAGE];
+    set((state) => ({
+      sessions: { ...state.sessions, [id]: { meta, messages } },
+      currentSessionId: id
+    }));
+    await saveSession(meta, messages);
   },
   async sendMessage(content: string, imageData?: string | null) {
     const sessionId = get().currentSessionId;
@@ -149,5 +162,21 @@ export const useChatStore = create<ChatState>((set, get) => ({
       return { sessions: updated, currentSessionId: Object.keys(updated)[0] || null };
     });
     await deleteSession(id);
+  },
+  async clearChat(id: string) {
+    set((state) => {
+      const session = state.sessions[id];
+      if (!session) return state;
+      const messages: ChatMessage[] = [WELCOME_MESSAGE];
+      return {
+        ...state,
+        sessions: {
+          ...state.sessions,
+          [id]: { ...session, messages, meta: { ...session.meta, updatedAt: Date.now() } }
+        }
+      };
+    });
+    const session = get().sessions[id];
+    await saveSession(session.meta, session.messages);
   }
 }));
