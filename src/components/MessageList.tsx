@@ -1,16 +1,26 @@
+import { useRef, useEffect } from 'react';
 import { ChatMessage } from '../types/chat';
 import { useChatStore } from '../state/chatStore';
 import { clsx } from 'clsx';
 import { FALLBACK_IMAGE_PROMPT } from '../config/prompts';
+import TypingIndicator from './TypingIndicator';
 
 interface Props {
   messages: ChatMessage[];
 }
 
 export default function MessageList({ messages }: Props) {
-  const { retryMessage, validationErrors } = useChatStore();
+  const { retryMessage, validationErrors, assistantIsTyping } = useChatStore();
+  const scrollRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (scrollRef.current) {
+      scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
+    }
+  }, [messages, assistantIsTyping]);
+
   return (
-    <div className="scroll-shadow flex flex-1 flex-col gap-3 overflow-y-auto px-4 py-3">
+    <div className="scroll-shadow flex flex-1 flex-col gap-3 overflow-y-auto px-4 py-3" ref={scrollRef}>
       {messages.map((message) => (
         <div
           key={message.id}
@@ -44,7 +54,12 @@ export default function MessageList({ messages }: Props) {
           Schema validation failed: {validationErrors}
         </div>
       )}
-      {!messages.length && (
+      {assistantIsTyping && (
+        <div className="self-start rounded-lg border border-accent/50 bg-accent/10 px-4 py-3 text-sm text-white transition">
+          <TypingIndicator />
+        </div>
+      )}
+      {!messages.length && !assistantIsTyping && (
         <div className="flex flex-1 items-center justify-center text-sm text-gray-500">
           No messages yet. Upload an image to chat and we will ask: “{FALLBACK_IMAGE_PROMPT}”
         </div>

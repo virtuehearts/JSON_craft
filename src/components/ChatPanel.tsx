@@ -4,7 +4,7 @@ import MessageList from './MessageList';
 import Composer from './Composer';
 
 export default function ChatPanel() {
-  const { init, sessions, currentSessionId, assistantIsTyping } = useChatStore();
+  const { init, sessions, currentSessionId, assistantIsTyping, clearChat } = useChatStore();
 
   useEffect(() => {
     init();
@@ -15,6 +15,12 @@ export default function ChatPanel() {
     return sessions[currentSessionId]?.messages || [];
   }, [sessions, currentSessionId]);
 
+  const handleClear = () => {
+    if (currentSessionId) {
+      clearChat(currentSessionId);
+    }
+  };
+
   return (
     <div className="flex h-[75vh] min-h-[520px] flex-col rounded-xl border border-slate-800 bg-slate-900/60 shadow-xl">
       <div className="flex items-center justify-between border-b border-slate-800 px-4 py-3 text-sm text-gray-300">
@@ -22,7 +28,12 @@ export default function ChatPanel() {
           <span className="inline-flex h-2 w-2 rounded-full bg-accent" aria-hidden />
           Live chat
         </div>
-        <div className="text-xs text-gray-500">{assistantIsTyping ? 'Assistant is responding…' : 'Idle'}</div>
+        <div className="flex items-center gap-4">
+          <div className="text-xs text-gray-500">{assistantIsTyping ? 'Assistant is responding…' : 'Idle'}</div>
+          <button onClick={handleClear} className="text-xs text-gray-500 hover:text-gray-300">
+            Clear Chat
+          </button>
+        </div>
       </div>
       <MessageList messages={currentMessages} />
       <Composer />
