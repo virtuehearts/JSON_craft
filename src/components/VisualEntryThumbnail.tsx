@@ -1,4 +1,5 @@
-import { VisualEntry } from '../types/visual';
+import { useMemo } from 'react';
+import { VisualEntry, VisualJsonContent } from '../types/visual';
 
 interface Props {
   entry: VisualEntry;
@@ -6,35 +7,56 @@ interface Props {
   onDelete?: () => void;
 }
 
+function parseJsonContent(json: string): VisualJsonContent {
+  try {
+    return JSON.parse(json);
+  } catch (e) {
+    return {};
+  }
+}
+
 export default function VisualEntryThumbnail({ entry, onSelect, onDelete }: Props) {
+  const content = useMemo(() => parseJsonContent(entry.json), [entry.json]);
+
   return (
-    <div className="group relative overflow-hidden rounded-xl border border-slate-800 bg-slate-900/70 shadow-md">
-      <button type="button" className="block h-full w-full" onClick={onSelect}>
+    <div className="group flex h-full flex-col overflow-hidden rounded-xl border border-slate-800 bg-slate-900/70 shadow-md transition hover:border-slate-700">
+      <button type="button" className="block" onClick={onSelect}>
         <img
           src={entry.imageData}
           alt={entry.title}
-          className="aspect-[4/5] h-full w-full object-cover transition duration-300 group-hover:scale-[1.02]"
+          className="aspect-video w-full object-cover transition duration-300 group-hover:scale-[1.02]"
           loading="lazy"
         />
       </button>
-      <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-slate-950/80 via-slate-950/10 to-transparent opacity-90" />
-      <div className="absolute inset-x-0 bottom-0 flex items-start justify-between gap-2 p-3 text-left">
-        <div>
-          <p className="text-[11px] uppercase tracking-[0.2em] text-gray-400">Capture</p>
-          <p className="text-sm font-semibold text-white line-clamp-2">{entry.title}</p>
-        </div>
-        {onDelete && (
-          <button
-            type="button"
-            onClick={(event) => {
-              event.stopPropagation();
-              onDelete();
-            }}
-            className="pointer-events-auto rounded border border-rose-600/60 bg-slate-950/80 px-2 py-1 text-[11px] text-rose-100 opacity-0 transition focus:opacity-100 focus:outline-none group-hover:opacity-100"
-          >
-            Delete
-          </button>
+      <div className="flex flex-1 flex-col p-4 text-left">
+        <h3 className="mb-1 font-semibold text-white line-clamp-2">{entry.title}</h3>
+        <p className="mb-3 text-sm text-gray-400 line-clamp-3">{content.description || 'No description available.'}</p>
+
+        {content.tags && (
+          <div className="mb-3 flex flex-wrap gap-2">
+            {content.tags.map((tag) => (
+              <span key={tag} className="rounded-full bg-slate-800 px-2 py-1 text-xs text-gray-300">
+                {tag}
+              </span>
+            ))}
+          </div>
         )}
+
+        <div className="mt-auto flex items-center justify-between text-xs text-gray-500">
+          <span>{new Date(entry.createdAt).toLocaleDateString()}</span>
+          {onDelete && (
+            <button
+              type="button"
+              onClick={(event) => {
+                event.stopPropagation();
+                onDelete();
+              }}
+              className="pointer-events-auto rounded border border-rose-600/60 bg-slate-950/80 px-2 py-1 text-[11px] text-rose-100 opacity-0 transition focus:opacity-100 focus:outline-none group-hover:opacity-100"
+            >
+              Delete
+            </button>
+          )}
+        </div>
       </div>
     </div>
   );
