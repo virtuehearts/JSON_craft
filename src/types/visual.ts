@@ -7,3 +7,8 @@ export interface VisualEntry {
   notes?: string;
   searchableText?: string;
 }
+
+export type VisualJsonContent = {
+  description?: string;
+  tags?: string[];
+};
