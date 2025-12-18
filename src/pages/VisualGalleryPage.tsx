@@ -53,9 +53,9 @@ export default function VisualGalleryPage() {
     <div className="mx-auto flex max-w-6xl flex-col gap-4 px-6 py-6">
       <div className="flex flex-col gap-2 md:flex-row md:items-center md:justify-between">
         <div>
-          <h2 className="text-xl font-semibold text-white">Visual Gallery</h2>
+          <h2 className="text-xl font-semibold text-white">AI Image Prompts</h2>
           <p className="text-sm text-gray-400">
-            Pair uploaded photos with the JSON responses you generated so you can reference them later.
+            Browse our collection of {entries.length} curated prompts for image generation
           </p>
         </div>
       </div>
